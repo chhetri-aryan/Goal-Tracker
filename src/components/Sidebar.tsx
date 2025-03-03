@@ -65,28 +65,16 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
       )}
     >
       <div className="flex h-16 items-center justify-between px-4 border-b">
-        <div className={cn("flex items-center", !open && "justify-center w-full")}>
-          <Target className="h-6 w-6" />
-          {open && <span className="ml-2 font-semibold">Goal Tracker</span>}
+        <div className={cn("flex items-center transition-all duration-300", !open && "justify-center w-full")}>
+          <Target className={cn("h-6 w-6 transition-opacity duration-300", !open && "opacity-0")} />
+          <span className={cn("ml-2 font-semibold transition-opacity duration-300", !open && "opacity-0")}>Goal Tracker</span>
         </div>
         <Button
-          variant="ghost"
-          size="icon"
           onClick={() => setOpen(!open)}
-          className={cn("hidden md:flex", !open && "hidden")}
+          className="absolute right-2 transition-transform duration-300"
         >
-          <ChevronLeft className="h-4 w-4" />
+          {open ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </Button>
-        {!open && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setOpen(!open)}
-            className="hidden md:flex"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        )}
       </div>
       
       <ScrollArea className="flex-1 py-2">

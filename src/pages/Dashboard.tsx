@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { CalendarDays, CheckCircle2, Clock, Target, Trophy, TrendingUp } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 
 const goalData = [
   { name: "Completed", value: 8 },
@@ -25,7 +26,9 @@ const habitData = [
   { name: "Sun", completed: 5, total: 7 },
 ];
 
+
 export default function Dashboard() {
+  const { theme } = useTheme();
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -91,9 +94,9 @@ export default function Dashboard() {
 
       <Tabs defaultValue="goals" className="space-y-4">
         <TabsList className="space-x-1">
-          <TabsTrigger value="goals">Goals</TabsTrigger>
-          <TabsTrigger value="habits">Habits</TabsTrigger>
-          <TabsTrigger value="tasks">Tasks</TabsTrigger>
+            <TabsTrigger value="goals" className={`text-primary ${theme === 'light' ? 'bg-white' : ''}`}>Goals</TabsTrigger>
+            <TabsTrigger value="habits" className={`text-primary ${theme === 'light' ? 'bg-white' : ''}`}>Habits</TabsTrigger>
+            <TabsTrigger value="tasks" className={`text-primary ${theme === 'light' ? 'bg-white' : ''}`}>Tasks</TabsTrigger>
         </TabsList>
         <TabsContent value="goals" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -305,7 +308,7 @@ export default function Dashboard() {
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       <span>Drink Water</span>
                     </div>
-                    <Badge variant="outline">45%</Badge>
+                    <Badge>45%</Badge>
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between">
@@ -313,7 +316,7 @@ export default function Dashboard() {
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       <span>Journal Writing</span>
                     </div>
-                    <Badge variant="outline">38%</Badge>
+                    <Badge>38%</Badge>
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between">
@@ -321,7 +324,7 @@ export default function Dashboard() {
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       <span>Early Sleep</span>
                     </div>
-                    <Badge variant="outline">30%</Badge>
+                    <Badge>30%</Badge>
                   </div>
                 </div>
               </CardContent>

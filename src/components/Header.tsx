@@ -32,12 +32,12 @@ const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
         <h1 className="text-xl font-semibold">Welcome, {user?.name}</h1>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon">
+        {/* <Button>
           <Bell className="h-5 w-5" />
-        </Button>
+        </Button> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button>
               {theme === 'dark' ? (
                 <Moon className="h-5 w-5" />
               ) : (

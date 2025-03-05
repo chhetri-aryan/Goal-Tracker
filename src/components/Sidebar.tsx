@@ -98,9 +98,9 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
       
       <div className="mt-auto border-t p-4">
         <div className="flex items-center gap-3 mb-4">
-          <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
-            {user?.name?.charAt(0).toUpperCase() || 'U'}
-          </div>
+            <div className="h-9 w-9 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 via-sky to-pink-500 flex items-center justify-center text-white transition-transform duration-300 transform hover:rotate-12 hover:scale-110">
+              {user?.name ? user.name.charAt(0).toUpperCase() + user.name.charAt(1).toUpperCase() : 'U'}
+            </div>
           {open && (
             <div className="overflow-hidden">
               <p className="text-sm font-medium truncate">{user?.name}</p>

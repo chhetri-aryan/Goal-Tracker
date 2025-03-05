@@ -1,11 +1,35 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
-import { CalendarDays, CheckCircle2, Clock, Target, Trophy, TrendingUp } from "lucide-react";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts";
+import {
+  CalendarDays,
+  CheckCircle2,
+  Clock,
+  Target,
+  Trophy,
+  TrendingUp,
+} from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 
 const goalData = [
@@ -14,7 +38,11 @@ const goalData = [
   { name: "Not Started", value: 3 },
 ];
 
-const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))'];
+const COLORS = [
+  "hsl(var(--chart-1))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+];
 
 const habitData = [
   { name: "Mon", completed: 5, total: 7 },
@@ -26,21 +54,30 @@ const habitData = [
   { name: "Sun", completed: 5, total: 7 },
 ];
 
-
 export default function Dashboard() {
   const { theme } = useTheme();
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+          <p className="text-muted-foreground">
+            Track your progress and stay motivated.
+          </p>
+        </div>
         <div className="flex items-center gap-2">
           <CalendarDays className="h-5 w-5 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">
-            {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            {new Date().toLocaleDateString("en-US", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
           </span>
         </div>
       </div>
-      
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -49,33 +86,31 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">16</div>
-            <p className="text-xs text-muted-foreground">
-              +2 from last month
-            </p>
+            <p className="text-xs text-muted-foreground">+2 from last month</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Completed Goals</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Completed Goals
+            </CardTitle>
             <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">8</div>
-            <p className="text-xs text-muted-foreground">
-              50% completion rate
-            </p>
+            <p className="text-xs text-muted-foreground">50% completion rate</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Current Streak</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Current Streak
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">12 days</div>
-            <p className="text-xs text-muted-foreground">
-              Best: 21 days
-            </p>
+            <p className="text-xs text-muted-foreground">Best: 21 days</p>
           </CardContent>
         </Card>
         <Card>
@@ -85,27 +120,38 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">7</div>
-            <p className="text-xs text-muted-foreground">
-              3 new this month
-            </p>
+            <p className="text-xs text-muted-foreground">3 new this month</p>
           </CardContent>
         </Card>
       </div>
 
       <Tabs defaultValue="goals" className="space-y-4">
         <TabsList className="space-x-1">
-            <TabsTrigger value="goals" className={`text-primary ${theme === 'light' ? 'bg-white' : ''}`}>Goals</TabsTrigger>
-            <TabsTrigger value="habits" className={`text-primary ${theme === 'light' ? 'bg-white' : ''}`}>Habits</TabsTrigger>
-            <TabsTrigger value="tasks" className={`text-primary ${theme === 'light' ? 'bg-white' : ''}`}>Tasks</TabsTrigger>
+          <TabsTrigger
+            value="goals"
+            className={`text-primary ${theme === "light" ? "bg-white" : ""}`}
+          >
+            Goals
+          </TabsTrigger>
+          <TabsTrigger
+            value="habits"
+            className={`text-primary ${theme === "light" ? "bg-white" : ""}`}
+          >
+            Habits
+          </TabsTrigger>
+          <TabsTrigger
+            value="tasks"
+            className={`text-primary ${theme === "light" ? "bg-white" : ""}`}
+          >
+            Tasks
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="goals" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Card>
               <CardHeader>
                 <CardTitle>Goal Progress</CardTitle>
-                <CardDescription>
-                  Your goal completion status
-                </CardDescription>
+                <CardDescription>Your goal completion status</CardDescription>
               </CardHeader>
               <CardContent className="pl-2">
                 <ResponsiveContainer width="100%" height={200}>
@@ -120,7 +166,10 @@ export default function Dashboard() {
                       dataKey="value"
                     >
                       {goalData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
                       ))}
                     </Pie>
                     <Tooltip />
@@ -128,15 +177,21 @@ export default function Dashboard() {
                 </ResponsiveContainer>
                 <div className="mt-2 grid grid-cols-3 gap-4 text-center">
                   <div>
-                    <div className="text-xs font-medium text-muted-foreground">Completed</div>
+                    <div className="text-xs font-medium text-muted-foreground">
+                      Completed
+                    </div>
                     <div className="text-lg font-bold">8</div>
                   </div>
                   <div>
-                    <div className="text-xs font-medium text-muted-foreground">In Progress</div>
+                    <div className="text-xs font-medium text-muted-foreground">
+                      In Progress
+                    </div>
                     <div className="text-lg font-bold">5</div>
                   </div>
                   <div>
-                    <div className="text-xs font-medium text-muted-foreground">Not Started</div>
+                    <div className="text-xs font-medium text-muted-foreground">
+                      Not Started
+                    </div>
                     <div className="text-lg font-bold">3</div>
                   </div>
                 </div>
@@ -145,9 +200,7 @@ export default function Dashboard() {
             <Card className="col-span-1 row-span-2">
               <CardHeader>
                 <CardTitle>Priority Goals</CardTitle>
-                <CardDescription>
-                  Your top priority goals
-                </CardDescription>
+                <CardDescription>Your top priority goals</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -197,9 +250,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Recent Achievements</CardTitle>
-                <CardDescription>
-                  Your latest milestones
-                </CardDescription>
+                <CardDescription>Your latest milestones</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -208,8 +259,12 @@ export default function Dashboard() {
                       <Trophy className="h-4 w-4 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">Consistency Champion</p>
-                      <p className="text-xs text-muted-foreground">Completed all habits for 7 days</p>
+                      <p className="text-sm font-medium">
+                        Consistency Champion
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Completed all habits for 7 days
+                      </p>
                     </div>
                   </div>
                   <Separator />
@@ -219,7 +274,9 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <p className="text-sm font-medium">Goal Getter</p>
-                      <p className="text-xs text-muted-foreground">Completed 5 goals this month</p>
+                      <p className="text-xs text-muted-foreground">
+                        Completed 5 goals this month
+                      </p>
                     </div>
                   </div>
                   <Separator />
@@ -229,7 +286,9 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <p className="text-sm font-medium">Progress Master</p>
-                      <p className="text-xs text-muted-foreground">Improved in all goal categories</p>
+                      <p className="text-xs text-muted-foreground">
+                        Improved in all goal categories
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -252,8 +311,16 @@ export default function Dashboard() {
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="completed" fill="hsl(var(--chart-1))" name="Completed" />
-                  <Bar dataKey="total" fill="hsl(var(--chart-2))" name="Total" />
+                  <Bar
+                    dataKey="completed"
+                    fill="hsl(var(--chart-1))"
+                    name="Completed"
+                  />
+                  <Bar
+                    dataKey="total"
+                    fill="hsl(var(--chart-2))"
+                    name="Total"
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -262,9 +329,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Top Habits</CardTitle>
-                <CardDescription>
-                  Your most consistent habits
-                </CardDescription>
+                <CardDescription>Your most consistent habits</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -337,11 +402,8 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>Today's Tasks</CardTitle>
-                  <CardDescription>
-                    Your tasks for today
-                  </CardDescription>
+                  <CardDescription>Your tasks for today</CardDescription>
                 </div>
-               
               </div>
             </CardHeader>
             <CardContent>
@@ -350,34 +412,48 @@ export default function Dashboard() {
                   <div className="flex h-5 w-5 items-center justify-center rounded-full border">
                     <CheckCircle2 className="h-3 w-3 text-primary" />
                   </div>
-                  <span className="line-through opacity-70">Complete project proposal</span>
-                  <Badge variant="outline" className="ml-auto">Work</Badge>
+                  <span className="line-through opacity-70">
+                    Complete project proposal
+                  </span>
+                  <Badge variant="outline" className="ml-auto">
+                    Work
+                  </Badge>
                 </div>
                 <Separator />
                 <div className="flex items-center gap-2">
                   <div className="flex h-5 w-5 items-center justify-center rounded-full border">
                     <CheckCircle2 className="h-3 w-3 text-primary" />
                   </div>
-                  <span className="line-through opacity-70">30 minutes workout</span>
-                  <Badge variant="outline" className="ml-auto">Health</Badge>
+                  <span className="line-through opacity-70">
+                    30 minutes workout
+                  </span>
+                  <Badge variant="outline" className="ml-auto">
+                    Health
+                  </Badge>
                 </div>
                 <Separator />
                 <div className="flex items-center gap-2">
                   <div className="h-5 w-5 rounded-full border"></div>
                   <span>Read 20 pages</span>
-                  <Badge variant="outline" className="ml-auto">Personal</Badge>
+                  <Badge variant="outline" className="ml-auto">
+                    Personal
+                  </Badge>
                 </div>
                 <Separator />
                 <div className="flex items-center gap-2">
                   <div className="h-5 w-5 rounded-full border"></div>
                   <span>Plan weekly meals</span>
-                  <Badge variant="outline" className="ml-auto">Health</Badge>
+                  <Badge variant="outline" className="ml-auto">
+                    Health
+                  </Badge>
                 </div>
                 <Separator />
                 <div className="flex items-center gap-2">
                   <div className="h-5 w-5 rounded-full border"></div>
                   <span>Call mom</span>
-                  <Badge variant="outline" className="ml-auto">Family</Badge>
+                  <Badge variant="outline" className="ml-auto">
+                    Family
+                  </Badge>
                 </div>
               </div>
             </CardContent>
@@ -386,9 +462,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Upcoming Deadlines</CardTitle>
-                <CardDescription>
-                  Tasks due soon
-                </CardDescription>
+                <CardDescription>Tasks due soon</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -412,9 +486,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Task Completion</CardTitle>
-                <CardDescription>
-                  Your task completion rate
-                </CardDescription>
+                <CardDescription>Your task completion rate</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">

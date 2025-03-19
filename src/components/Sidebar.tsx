@@ -60,7 +60,7 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
   return (
     <div
       className={cn(
-        "fixed inset-y-0 left-0 z-50 flex flex-col border-r bg-card transition-all duration-300 ease-in-out md:relative",
+        "relative inset-y-0 left-0 z-50 flex flex-col border-r bg-card transition-all duration-300 ease-in-out md:relative",
         open ? "w-64" : "w-16"
       )}
     >
@@ -71,7 +71,7 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
         </div>
         <Button
           onClick={() => setOpen(!open)}
-          className="absolute right-2 transition-transform duration-300"
+          className="absolute right-2 transition-transform duration-300 "
         >
           {open ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </Button>

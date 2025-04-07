@@ -3,9 +3,6 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 
-import axios from 'axios';
-import { BASE_URL } from '../constants.ts';
-
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   

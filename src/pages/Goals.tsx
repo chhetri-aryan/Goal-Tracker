@@ -36,7 +36,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { format, addMonths } from "date-fns";
+import { format, formatDate } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
   CalendarIcon,
@@ -51,159 +51,37 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 
-// Mock data for goals
-const mockGoals = [
-  {
-    id: 1,
-    title: "Run 5K",
-    description: "Train and complete a 5K run",
-    category: "Health",
-    targetDate: addMonths(new Date(), 1),
-    progress: 75,
-    milestones: [
-      { id: 1, title: "Run 1K without stopping", completed: true },
-      { id: 2, title: "Run 2K without stopping", completed: true },
-      { id: 3, title: "Run 3K without stopping", completed: true },
-      { id: 4, title: "Run 4K without stopping", completed: false },
-      { id: 5, title: "Complete 5K run", completed: false },
-    ],
-    priority: "high",
-    status: "in-progress",
-  },
-  {
-    id: 2,
-    title: "Learn React",
-    description: "Complete React course and build a project",
-    category: "Career",
-    targetDate: addMonths(new Date(), 2),
-    progress: 60,
-    milestones: [
-      { id: 1, title: "Complete basic tutorials", completed: true },
-      { id: 2, title: "Learn hooks and state management", completed: true },
-      { id: 3, title: "Build a small application", completed: false },
-      { id: 4, title: "Learn advanced patterns", completed: false },
-      { id: 5, title: "Deploy a production app", completed: false },
-    ],
-    priority: "high",
-    status: "in-progress",
-  },
-  {
-    id: 3,
-    title: "Save $5000",
-    description: "Save money for emergency fund",
-    category: "Finance",
-    targetDate: addMonths(new Date(), 6),
-    progress: 40,
-    milestones: [
-      { id: 1, title: "Save $1000", completed: true },
-      { id: 2, title: "Save $2000", completed: true },
-      { id: 3, title: "Save $3000", completed: false },
-      { id: 4, title: "Save $4000", completed: false },
-      { id: 5, title: "Save $5000", completed: false },
-    ],
-    priority: "medium",
-    status: "in-progress",
-  },
-  {
-    id: 4,
-    title: "Read 12 books",
-    description: "Read one book per month for a year",
-    category: "Personal",
-    targetDate: addMonths(new Date(), 12),
-    progress: 25,
-    milestones: [
-      { id: 1, title: "Read 3 books", completed: true },
-      { id: 2, title: "Read 6 books", completed: false },
-      { id: 3, title: "Read 9 books", completed: false },
-      { id: 4, title: "Read 12 books", completed: false },
-    ],
-    priority: "medium",
-    status: "in-progress",
-  },
-  {
-    id: 5,
-    title: "Learn Spanish",
-    description: "Achieve conversational fluency in Spanish",
-    category: "Education",
-    targetDate: addMonths(new Date(), 8),
-    progress: 15,
-    milestones: [
-      { id: 1, title: "Learn basic vocabulary", completed: true },
-      { id: 2, title: "Complete beginner course", completed: false },
-      { id: 3, title: "Have basic conversations", completed: false },
-      { id: 4, title: "Reach intermediate level", completed: false },
-      { id: 5, title: "Achieve conversational fluency", completed: false },
-    ],
-    priority: "low",
-    status: "in-progress",
-  },
-  {
-    id: 6,
-    title: "Declutter Home",
-    description: "Organize and minimize possessions",
-    category: "Personal",
-    targetDate: addMonths(new Date(), 1),
-    progress: 50,
-    milestones: [
-      { id: 1, title: "Declutter bedroom", completed: true },
-      { id: 2, title: "Organize kitchen", completed: true },
-      { id: 3, title: "Clean out garage", completed: false },
-      { id: 4, title: "Minimize digital files", completed: false },
-    ],
-    priority: "medium",
-    status: "in-progress",
-  },
-  {
-    id: 7,
-    title: "Meditate Daily",
-    description: "Establish a consistent meditation practice",
-    category: "Wellness",
-    targetDate: addMonths(new Date(), 3),
-    progress: 100,
-    milestones: [
-      { id: 1, title: "Meditate 5 minutes daily", completed: true },
-      { id: 2, title: "Increase to 10 minutes", completed: true },
-      { id: 3, title: "Practice for 30 days straight", completed: true },
-      { id: 4, title: "Reach 15 minutes daily", completed: true },
-    ],
-    priority: "high",
-    status: "completed",
-  },
-  {
-    id: 8,
-    title: "Get Promotion",
-    description: "Achieve next career level",
-    category: "Career",
-    targetDate: addMonths(new Date(), 6),
-    progress: 0,
-    milestones: [
-      { id: 1, title: "Update resume and skills", completed: false },
-      { id: 2, title: "Complete key project", completed: false },
-      { id: 3, title: "Request performance review", completed: false },
-      { id: 4, title: "Apply for promotion", completed: false },
-    ],
-    priority: "high",
-    status: "not-started",
-  },
-];
+import { Milestone, useAuth } from "@/contexts/auth-context";
+import axios from "axios";
+import { BASE_URL } from "../constants.ts";
+import { Goal } from "@/contexts/auth-context";
 
-export default function Goals() {
-  const [goals, setGoals] = useState(mockGoals);
+const Goals = () => {
+  const { user, goals, isLoading, fetchGoals } = useAuth();
+
+  // Fetch goals on mount and whenever user changes
+  useEffect(() => {
+    if (user) {
+      fetchGoals();
+    }
+  }, [user, fetchGoals]);
+
+  if (isLoading) {
+    return <div className="text-center mt-10">Loading...</div>;
+  }
+
   const [newGoal, setNewGoal] = useState({
     title: "",
     description: "",
     category: "",
-    targetDate: new Date(),
     priority: "medium",
-    status: "not-started",
+    targetDate: new Date(),
   });
   const [isAddGoalOpen, setIsAddGoalOpen] = useState(false);
   const [date, setDate] = useState<Date>();
   const [filter, setFilter] = useState("all");
   const { toast } = useToast();
-  const [selectedGoal, setSelectedGoal] = useState<
-    (typeof mockGoals)[0] | null
-  >(null);
+  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [isViewGoalOpen, setIsViewGoalOpen] = useState(false);
   const [newMilestone, setNewMilestone] = useState("");
 
@@ -233,83 +111,186 @@ export default function Goals() {
     }
   };
 
-  const saveUpdatedMilestone = () => {
+  const saveUpdatedMilestone = async () => {
     if (!editingMilestoneId || !selectedGoalId) return;
 
-    setGoals((prevGoals) =>
-      prevGoals.map((goal) =>
-        goal.id === selectedGoalId
-          ? {
-              ...goal,
-              milestones: goal.milestones.map((m) =>
-                m.id === editingMilestoneId
-                  ? { ...m, title: updatedMilestoneTitle }
-                  : m
-              ),
-            }
-          : goal
-      )
-    );
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/goal/update_milestone/${editingMilestoneId}/`,
+        {
+          title: updatedMilestoneTitle,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      toast({
+        title: "Milestone updated",
+        description: "New milestone has been updated to your goal",
+      });
+      fetchGoals(); // Fetch updated goals after deleting
+    } catch (error) {
+      console.error("Error updating Milestone:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update Milestone",
+        variant: "destructive",
+      });
+    }
 
     setIsEditMilestoneOpen(false);
     setEditingMilestoneId(null);
     setUpdatedMilestoneTitle("");
   };
 
-  const handleAddGoal = () => {
-    if (!newGoal.title) {
+  const handleAddGoal = async () => {
+    if (
+      !newGoal.title ||
+      !newGoal.description ||
+      !newGoal.category ||
+      !date ||
+      !newGoal.priority
+    ) {
       toast({
-        title: "Goal title is required",
-        description: "Please enter a title for your goal",
+        title: "All the fields are required",
+        description: "Please fill in all the fields",
         variant: "destructive",
       });
       return;
     }
 
-    const goal = {
-      id: goals.length + 1,
-      title: newGoal.title,
-      description: newGoal.description,
-      category: newGoal.category || "Personal",
-      targetDate: date || addMonths(new Date(), 1),
-      progress: 0,
-      milestones: [],
-      priority: newGoal.priority,
-      status: "not-started",
-    };
-
-    setGoals([...goals, goal]);
-    setNewGoal({
-      title: "",
-      description: "",
-      category: "",
-      targetDate: new Date(),
-      priority: "medium",
-      status: "not-started",
-    });
-    setDate(undefined);
-    setIsAddGoalOpen(false);
-
-    toast({
-      title: "Goal added",
-      description: "Your goal has been added successfully",
-    });
-  };
-
-  const deleteGoal = (id: number) => {
-    const goal = goals.find((g) => g.id === id);
-    setGoals(goals.filter((goal) => goal.id !== id));
-
-    if (goal) {
+    if (!user) {
       toast({
-        title: "Goal deleted",
-        description: goal.title,
+        title: "Error",
+        description: "User not authenticated",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (editGoalId !== -1) {
+      try {
+        const response = await axios.put(
+          `${BASE_URL}/goal/update_goal/${editGoalId}/`,
+          {
+            id: user.id,
+            title: newGoal.title,
+            description: newGoal.description,
+            category: newGoal.category,
+            targetDate: format(date, "yyyy-MM-dd"), // "YYYY-MM-DD"
+            priority: newGoal.priority,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+        // setGoals(response.data);
+        console.log("Fetched goals:", response.data); // This logs correct data
+        setNewGoal({
+          title: "",
+          description: "",
+          category: "",
+          targetDate: new Date(),
+          priority: "medium",
+        });
+        setDate(undefined);
+        setIsAddGoalOpen(false);
+
+        toast({
+          title: "Goal updated",
+          description: "Your goal has been updated successfully",
+        });
+
+        fetchGoals(); // Fetch updated goals after adding a new one
+      } catch (error) {
+        console.error("Error updating goal:", error);
+        toast({
+          title: "Error",
+          description: "Failed to update goal",
+          variant: "destructive",
+        });
+      }
+      setEditGoalId(-1);
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/goal/create_goal/`,
+        {
+          id: user.id,
+          title: newGoal.title,
+          description: newGoal.description,
+          category: newGoal.category,
+          targetDate: format(date, "yyyy-MM-dd"), // "YYYY-MM-DD"
+
+          priority: newGoal.priority,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      // setGoals(response.data);
+      console.log("Fetched goals:", response.data); // This logs correct data
+      setNewGoal({
+        title: "",
+        description: "",
+        category: "",
+        targetDate: new Date(),
+        priority: "medium",
+      });
+      setDate(undefined);
+      setIsAddGoalOpen(false);
+
+      toast({
+        title: "Goal added",
+        description: "Your goal has been added successfully",
+      });
+
+      fetchGoals(); // Fetch updated goals after adding a new one
+    } catch (error) {
+      console.error("Error adding goal:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add goal",
+        variant: "destructive",
       });
     }
   };
 
+  const deleteGoal = async (id: number) => {
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}/goal/delete_goal/${id}/`,
+        {
+          withCredentials: true,
+        }
+      );
+      // setGoals(response.data);
+      console.log("Fetched goals:", response.data); // This logs correct data
+
+      toast({
+        title: "Goal deleted",
+        description: "Goal has been deleted successfully",
+      });
+      fetchGoals(); // Fetch updated goals after deleting
+    } catch (error) {
+      console.error("Error deleting goal:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete goal",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const [editGoalId, setEditGoalId] = useState(-1);
+
   const editGoal = (id: number) => {
     const goal = goals.find((g) => g.id === id);
+    if (!goal) return;
+    setEditGoalId(id);
     if (goal) {
       setNewGoal({
         title: goal.title,
@@ -317,7 +298,6 @@ export default function Goals() {
         category: goal.category,
         targetDate: goal.targetDate,
         priority: goal.priority,
-        status: goal.status,
       });
       setDate(goal.targetDate);
       setIsAddGoalOpen(true);
@@ -332,71 +312,64 @@ export default function Goals() {
     }
   };
 
-  const toggleMilestoneCompletion = (goalId: number, milestoneId: number) => {
-    const updatedGoals = goals.map((goal) => {
-      if (goal.id === goalId) {
-        const updatedMilestones = goal.milestones.map((milestone) => {
-          if (milestone.id === milestoneId) {
-            return { ...milestone, completed: !milestone.completed };
-          }
-          return milestone;
-        });
-
-        // Calculate new progress
-        const completedCount = updatedMilestones.filter(
-          (m) => m.completed
-        ).length;
-        const totalCount = updatedMilestones.length;
-        const newProgress = Math.round((completedCount / totalCount) * 100);
-
-        // Update status if needed
-        let newStatus = goal.status;
-        if (newProgress === 100) {
-          newStatus = "completed";
-        } else if (newProgress > 0) {
-          newStatus = "in-progress";
+  const toggleMilestoneCompletion = async (milestone: Milestone) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/goal/update_milestone/${milestone.id}/`,
+        {
+          status: !milestone.status,
+        },
+        {
+          withCredentials: true,
         }
+      );
 
-        return {
-          ...goal,
-          milestones: updatedMilestones,
-          progress: newProgress,
-          status: newStatus,
-        };
-      }
-      return goal;
-    });
-
-    setGoals(updatedGoals);
-
-    // Also update the selected goal if it's the one being modified
-    if (selectedGoal && selectedGoal.id === goalId) {
-      const updatedGoal = updatedGoals.find((g) => g.id === goalId);
-      if (updatedGoal) {
-        setSelectedGoal(updatedGoal);
-      }
+      toast({
+        title: "Milestone updated",
+        description: "New milestone has been updated to your goal",
+      });
+      fetchGoals(); // Fetch updated goals after deleting
+    } catch (error) {
+      console.error("Error updating Milestone:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update Milestone",
+        variant: "destructive",
+      });
     }
   };
 
-  const addMilestone = () => {
+  const addMilestone = async () => {
     if (!selectedGoal || !newMilestone) return;
 
-    const updatedGoal = {
-      ...selectedGoal,
-      milestones: [
-        ...selectedGoal.milestones,
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/goal/create_milestone/`,
         {
-          id: selectedGoal.milestones.length + 1,
+          goal_id: selectedGoal.id,
           title: newMilestone,
-          completed: false,
         },
-      ],
-    };
+        {
+          withCredentials: true,
+        }
+      );
+      // setGoals(response.data);
+      console.log("Fetched goals:", response.data); // This logs correct data
 
-    setGoals(
-      goals.map((goal) => (goal.id === selectedGoal.id ? updatedGoal : goal))
-    );
-    setSelectedGoal(updatedGoal);
+      toast({
+        title: "Milestone added",
+        description: "New milestone has been added to your goal",
+      });
+      fetchGoals(); // Fetch updated goals after deleting
+    } catch (error) {
+      console.error("Error adding Milestone:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add Milestone",
+        variant: "destructive",
+      });
+    }
+
     setNewMilestone("");
 
     toast({
@@ -405,35 +378,36 @@ export default function Goals() {
     });
   };
 
-  const deleteMilestone = (goalId: number, milestoneId: number) => {
-    setGoals(
-      goals.map((goal) => {
-        if (goal.id === goalId) {
-          const updatedMilestones = goal.milestones.filter(
-            (milestone) => milestone.id !== milestoneId
-          );
-          return { ...goal, milestones: updatedMilestones };
+  const deleteMilestone = async (milestoneId: number) => {
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}/goal/delete_milestone/${milestoneId}/`,
+        {
+          withCredentials: true,
         }
-        return goal;
-      })
-    );
+      );
+      console.log("Fetched goals:", response.data); // This logs correct data
 
-    if (selectedGoal && selectedGoal.id === goalId) {
-      const updatedGoal = {
-        ...selectedGoal,
-        milestones: selectedGoal.milestones.filter(
-          (milestone) => milestone.id !== milestoneId
-        ),
-      };
-      setSelectedGoal(updatedGoal);
+      toast({
+        title: "Milestone deleted",
+        description: "Milestone has been deleted successfully",
+      });
+      fetchGoals(); // Fetch updated goals after deleting
+    } catch (error) {
+      console.error("Error deleting milestone:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete milestone",
+        variant: "destructive",
+      });
     }
   };
 
   const filteredGoals = goals.filter((goal) => {
     if (filter === "all") return true;
-    if (filter === "in-progress") return goal.status === "in-progress";
-    if (filter === "completed") return goal.status === "completed";
-    if (filter === "not-started") return goal.status === "not-started";
+    // if (filter === "in-progress") return goal.status === "in-progress";
+    // if (filter === "completed") return goal.status === "completed";
+    // if (filter === "not-started") return goal.status === "not-started";
     if (filter === "high-priority") return goal.priority === "high";
     if (filter === "health") return goal.category === "Health";
     if (filter === "career") return goal.category === "Career";
@@ -474,17 +448,26 @@ export default function Goals() {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: Number) => {
     switch (status) {
-      case "completed":
+      case 100:
         return "bg-green-500/10 text-green-500";
-      case "in-progress":
+      case 0:
+        return "bg-red-500/10 text-red-500";
+        default:
         return "bg-blue-500/10 text-blue-500";
-      case "not-started":
-        return "bg-gray-500/10 text-gray-500";
-      default:
-        return "bg-gray-500/10 text-gray-500";
+        
     }
+  };
+
+  const getProgress = (goal: Goal) => {
+    const totalMilestones = goal.milestones.length;
+    const completedMilestones = goal.milestones.filter(
+      (milestone) => milestone.status
+    ).length;
+    return totalMilestones > 0
+      ? Math.round((completedMilestones / totalMilestones) * 100)
+      : 0;
   };
 
   return (
@@ -505,7 +488,9 @@ export default function Goals() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Add New Goal</DialogTitle>
+              <DialogTitle>
+                {editGoalId !== -1 ? "Edit Goal" : "Add Goal"}
+              </DialogTitle>
               <DialogDescription>
                 Create a new goal to track your progress.
               </DialogDescription>
@@ -602,7 +587,9 @@ export default function Goals() {
               <Button variant="outline" onClick={() => setIsAddGoalOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleAddGoal}>Add Goal</Button>
+              <Button onClick={handleAddGoal}>
+                {editGoalId !== -1 ? "Edit Goal" : "Add Goal"}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -664,9 +651,9 @@ export default function Goals() {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <span>Progress</span>
-                        <span>{goal.progress}%</span>
+                        <span>{getProgress(goal)}%</span>
                       </div>
-                      <Progress value={goal.progress} className="h-2" />
+                      <Progress value={getProgress(goal)} className="h-2" />
                     </div>
 
                     <div className="flex items-center justify-between text-sm">
@@ -676,10 +663,10 @@ export default function Goals() {
                           Target: {format(goal.targetDate, "MMM d, yyyy")}
                         </span>
                       </div>
-                      <Badge className={getStatusColor(goal.status)}>
-                        {goal.status === "in-progress"
+                      <Badge className={getStatusColor(getProgress(goal))}>
+                        {getProgress(goal) > 0
                           ? "In Progress"
-                          : goal.status === "not-started"
+                          : getProgress(goal) == 0
                           ? "Not Started"
                           : "Completed"}
                       </Badge>
@@ -696,14 +683,14 @@ export default function Goals() {
                               key={milestone.id}
                               className="flex items-center gap-1"
                             >
-                              {milestone.completed ? (
+                              {milestone.status ? (
                                 <CheckCircle2 className="h-3 w-3 text-primary" />
                               ) : (
                                 <div className="h-3 w-3 rounded-full border" />
                               )}
                               <span
                                 className={
-                                  milestone.completed
+                                  milestone.status
                                     ? "text-muted-foreground line-through"
                                     : ""
                                 }
@@ -777,10 +764,10 @@ export default function Goals() {
                   <div className="flex items-center justify-between">
                     <h4 className="font-medium">Progress</h4>
                     <span className="text-sm font-medium">
-                      {selectedGoal.progress}%
+                      {getProgress(selectedGoal)}%
                     </span>
                   </div>
-                  <Progress value={selectedGoal.progress} className="h-2" />
+                  <Progress value={getProgress(selectedGoal)} className="h-2" />
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -801,10 +788,12 @@ export default function Goals() {
                       <Flag className="h-4 w-4 text-muted-foreground" />
                       <div>
                         <p className="text-sm font-medium">Status</p>
-                        <Badge className={getStatusColor(selectedGoal.status)}>
-                          {selectedGoal.status === "in-progress"
+                        <Badge
+                          className={getStatusColor(getProgress(selectedGoal))}
+                        >
+                          {getProgress(selectedGoal) > 0
                             ? "In Progress"
-                            : selectedGoal.status === "not-started"
+                            : getProgress(selectedGoal) === 0
                             ? "Not Started"
                             : "Completed"}
                         </Badge>
@@ -828,17 +817,14 @@ export default function Goals() {
                         >
                           <div className="flex items-center gap-2">
                             <Checkbox
-                              checked={milestone.completed}
+                              checked={milestone.status}
                               onCheckedChange={() =>
-                                toggleMilestoneCompletion(
-                                  selectedGoal.id,
-                                  milestone.id
-                                )
+                                toggleMilestoneCompletion(milestone)
                               }
                             />
                             <span
                               className={cn(
-                                milestone.completed &&
+                                milestone.status &&
                                   "line-through text-muted-foreground"
                               )}
                             >
@@ -863,9 +849,7 @@ export default function Goals() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() =>
-                                deleteMilestone(selectedGoal.id, milestone.id)
-                              }
+                              onClick={() => deleteMilestone(milestone.id)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -940,4 +924,6 @@ export default function Goals() {
       {/* Delete milestone dialog */}
     </div>
   );
-}
+};
+
+export default Goals;

@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -15,16 +14,22 @@ import Reports from '@/pages/Reports';
 import Settings from '@/pages/Settings';
 import Layout from '@/components/Layout';
 
-// Protected route component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuth();
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+
+interface PrivateRouteProps {
+  children: JSX.Element;
+}
+
+const ProtectedRoute: React.FC<PrivateRouteProps> = ({ children }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div>Loading...</div>; // You can replace this with a spinner component
   }
-  
-  return <>{children}</>;
+
+  return isAuthenticated ? children : <Navigate to="/login" />;
 };
+
+
 
 function App() {
   return (

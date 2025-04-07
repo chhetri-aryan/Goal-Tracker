@@ -35,16 +35,16 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
       path: '/goals',
       icon: <Target className="h-5 w-5" />,
     },
-    {
-      name: 'Tasks',
-      path: '/tasks',
-      icon: <CheckSquare className="h-5 w-5" />,
-    },
-    {
-      name: 'Habits',
-      path: '/habits',
-      icon: <Calendar className="h-5 w-5" />,
-    },
+    // {
+    //   name: 'Tasks',
+    //   path: '/tasks',
+    //   icon: <CheckSquare className="h-5 w-5" />,
+    // },
+    // {
+    //   name: 'Habits',
+    //   path: '/habits',
+    //   icon: <Calendar className="h-5 w-5" />,
+    // },
     {
       name: 'Reports',
       path: '/reports',

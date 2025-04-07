@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+import { BASE_URL } from '../constants.ts';
 
 interface User {
   id: string;
@@ -15,43 +17,48 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
+interface Goal {
+  id: string;
+  title: string;
+  description: string;
+  targetDate: string;
+  milestones: Milestone[]
+}
+
+interface Milestone {
+  id: string;
+  title: string;
+  status: boolean;
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   useEffect(() => {
-    // Check if user is logged in from localStorage
-    const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
-    
-    if (token && storedUser) {
+    if (storedUser) {
       setUser(JSON.parse(storedUser));
+
+
     }
-    
     setIsLoading(false);
   }, []);
-  
+
   const login = async (email: string, password: string) => {
     setIsLoading(true);
-    
     try {
-      // In a real app, this would be an API call
-      // Simulating API response
-      const mockUser = {
-        id: '1',
-        name: email.split('@')[0],
+      const response = await axios.post(`${BASE_URL}/user/login/`, {
         email,
-      };
-      
-      const mockToken = 'mock-jwt-token-' + Math.random().toString(36).substring(2);
-      
-      // Store in localStorage
-      localStorage.setItem('token', mockToken);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      
-      setUser(mockUser);
+        password
+      }, {
+        withCredentials: true
+      });
+
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      setUser(response.data.user);
     } catch (error) {
       console.error('Login failed:', error);
       throw new Error('Invalid credentials');
@@ -59,26 +66,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsLoading(false);
     }
   };
-  
+
   const register = async (name: string, email: string, password: string) => {
     setIsLoading(true);
-    
     try {
-      // In a real app, this would be an API call
-      // Simulating API response
-      const mockUser = {
-        id: '1',
+      const response = await axios.post(`${BASE_URL}/user/register/`, {
         name,
         email,
-      };
-      
-      const mockToken = 'mock-jwt-token-' + Math.random().toString(36).substring(2);
-      
-      // Store in localStorage
-      localStorage.setItem('token', mockToken);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      
-      setUser(mockUser);
+        password
+      }, {
+        withCredentials: true
+      });
+
+      localStorage.setItem('user', JSON.stringify(response.data.user));
     } catch (error) {
       console.error('Registration failed:', error);
       throw new Error('Registration failed');
@@ -86,13 +86,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsLoading(false);
     }
   };
-  
+
   const logout = () => {
-    localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
   };
-  
+
   return (
     <AuthContext.Provider
       value={{
@@ -111,10 +110,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  
   return context;
 };

@@ -55,6 +55,8 @@ import { Milestone, useAuth } from "@/contexts/auth-context";
 import axios from "axios";
 import { BASE_URL } from "../constants.ts";
 import { Goal } from "@/contexts/auth-context";
+import { get } from "http";
+import { useTheme } from "@/components/theme-provider.tsx";
 
 const Goals = () => {
   const { user, goals, isLoading, fetchGoals } = useAuth();
@@ -403,16 +405,24 @@ const Goals = () => {
     }
   };
 
+  const getProgress = (goal: Goal) => {
+    const totalMilestones = goal.milestones.length;
+    const completedMilestones = goal.milestones.filter(
+      (milestone) => milestone.status
+    ).length;
+    return totalMilestones > 0
+      ? Math.round((completedMilestones / totalMilestones) * 100)
+      : 0;
+  };
+
   const filteredGoals = goals.filter((goal) => {
     if (filter === "all") return true;
-    // if (filter === "in-progress") return goal.status === "in-progress";
-    // if (filter === "completed") return goal.status === "completed";
-    // if (filter === "not-started") return goal.status === "not-started";
+    if (filter === "completed") return getProgress(goal) === 100;
+    if (filter === "in-progress")
+      return getProgress(goal) > 0 && getProgress(goal) < 100;
+    if (filter === "not-started") return getProgress(goal) === 0;
     if (filter === "high-priority") return goal.priority === "high";
-    if (filter === "health") return goal.category === "Health";
-    if (filter === "career") return goal.category === "Career";
-    if (filter === "personal") return goal.category === "Personal";
-    if (filter === "finance") return goal.category === "Finance";
+
     return true;
   });
 
@@ -454,21 +464,12 @@ const Goals = () => {
         return "bg-green-500/10 text-green-500";
       case 0:
         return "bg-red-500/10 text-red-500";
-        default:
+      default:
         return "bg-blue-500/10 text-blue-500";
-        
     }
   };
 
-  const getProgress = (goal: Goal) => {
-    const totalMilestones = goal.milestones.length;
-    const completedMilestones = goal.milestones.filter(
-      (milestone) => milestone.status
-    ).length;
-    return totalMilestones > 0
-      ? Math.round((completedMilestones / totalMilestones) * 100)
-      : 0;
-  };
+  const { theme } = useTheme();
 
   return (
     <div className="space-y-6">
@@ -597,11 +598,36 @@ const Goals = () => {
 
       <Tabs defaultValue="all" className="space-y-4" onValueChange={setFilter}>
         <TabsList className="space-x-1">
-          <TabsTrigger value="all">All Goals</TabsTrigger>
-          <TabsTrigger value="in-progress">In Progress</TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
-          <TabsTrigger value="not-started">Not Started</TabsTrigger>
-          <TabsTrigger value="high-priority">High Priority</TabsTrigger>
+          <TabsTrigger
+            value="all"
+            className={`text-primary ${theme === "light" ? "bg-white" : ""}`}
+          >
+            All Goals
+          </TabsTrigger>
+          <TabsTrigger
+            value="in-progress"
+            className={`text-primary ${theme === "light" ? "bg-white" : ""}`}
+          >
+            In Progress
+          </TabsTrigger>
+          <TabsTrigger
+            value="completed"
+            className={`text-primary ${theme === "light" ? "bg-white" : ""}`}
+          >
+            Completed
+          </TabsTrigger>
+          <TabsTrigger
+            value="not-started"
+            className={`text-primary ${theme === "light" ? "bg-white" : ""}`}
+          >
+            Not Started
+          </TabsTrigger>
+          <TabsTrigger
+            value="high-priority"
+            className={`text-primary ${theme === "light" ? "bg-white" : ""}`}
+          >
+            High Priority
+          </TabsTrigger>
         </TabsList>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -711,17 +737,23 @@ const Goals = () => {
                 </CardContent>
                 <CardFooter className="flex justify-between pt-2">
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
                     onClick={() => viewGoalDetails(goal.id)}
                   >
                     View Details
                   </Button>
                   <div className="flex gap-1">
-                    <Button variant="ghost" onClick={() => editGoal(goal.id)}>
+                    <Button
+                      variant="secondary"
+                      onClick={() => editGoal(goal.id)}
+                    >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" onClick={() => deleteGoal(goal.id)}>
+                    <Button
+                      variant="secondary"
+                      onClick={() => deleteGoal(goal.id)}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>

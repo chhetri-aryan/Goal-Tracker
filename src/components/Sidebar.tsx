@@ -14,6 +14,7 @@ import {
   ChevronRight,
   LogOut,
 } from 'lucide-react';
+import { SparklesText } from './magicui/sparkles-text';
 
 interface SidebarProps {
   open: boolean;
@@ -67,7 +68,7 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
       <div className="flex h-16 items-center justify-between px-4 border-b">
         <div className={cn("flex items-center transition-all duration-300", !open && "justify-center w-full")}>
           <Target className={cn("h-6 w-6 transition-opacity duration-300", !open && "opacity-0")} />
-          <span className={cn("ml-2 font-semibold transition-opacity duration-300", !open && "opacity-0")}>Goal Tracker</span>
+          <span className={cn("ml-2 font-semibold transition-opacity duration-300", !open && "opacity-0")}><SparklesText className="text-xl" sparklesCount={2} text='Goal Tracker' /></span>
         </div>
         <Button
           onClick={() => setOpen(!open)}

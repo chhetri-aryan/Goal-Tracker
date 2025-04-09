@@ -27,7 +27,7 @@ const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
         <Menu className="h-5 w-5" />
       </Button>
       <div className="flex-1">
-        <h1 className="text-xl font-semibold">Welcome, {user?.name}</h1>
+        <h1 className="text-xl font-semibold">Welcome, {user?.name.toUpperCase()}</h1>
       </div>
       <div className="hidden sm:flex items-center gap-2">
         <DropdownMenu>

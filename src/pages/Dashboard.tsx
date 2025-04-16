@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { Goal, useAuth } from "@/contexts/auth-context";
-import { get } from "http";
 
 const COLORS = [
   "hsl(var(--chart-1))",
@@ -204,7 +203,7 @@ export default function Dashboard() {
                       fill="#8884d8"
                       dataKey="value"
                     >
-                      {goalData.map((entry, index) => (
+                      {goalData.map((_, index) => (
                         <Cell
                           key={`cell-${index}`}
                           fill={COLORS[index % COLORS.length]}

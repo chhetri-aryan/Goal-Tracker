@@ -36,7 +36,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { format, formatDate } from "date-fns";
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
   CalendarIcon,
@@ -55,7 +55,6 @@ import { Milestone, useAuth } from "@/contexts/auth-context";
 import axios from "axios";
 import { BASE_URL } from "../constants.ts";
 import { Goal } from "@/contexts/auth-context";
-import { get } from "http";
 import { useTheme } from "@/components/theme-provider.tsx";
 
 const Goals = () => {
@@ -126,6 +125,8 @@ const Goals = () => {
           withCredentials: true,
         }
       );
+
+      console.log(response.data);
 
       toast({
         title: "Milestone updated",
@@ -316,7 +317,7 @@ const Goals = () => {
 
   const toggleMilestoneCompletion = async (milestone: Milestone) => {
     try {
-      const response = await axios.put(
+      await axios.put(
         `${BASE_URL}/goal/update_milestone/${milestone.id}/`,
         {
           status: !milestone.status,
@@ -864,9 +865,8 @@ const Goals = () => {
                             </span>
                           </div>
 
-                          <div>
+                          <div className="flex items-center gap-2">
                             <Button
-                              variant="ghost"
                               size="sm"
                               onClick={() =>
                                 handleEditMilestone(
@@ -879,7 +879,7 @@ const Goals = () => {
                             </Button>
 
                             <Button
-                              variant="ghost"
+                              variant="destructive"
                               size="sm"
                               onClick={() => deleteMilestone(milestone.id)}
                             >

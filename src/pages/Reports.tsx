@@ -3,9 +3,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, LineChart, PieChart } from '@/components/ui/chart';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Goal, useAuth } from '@/contexts/auth-context';
 
 const Reports = () => {
+
+  const { goals } = useAuth();
+
+
+  const getProgress = (goal: Goal) => {
+    const totalMilestones = goal.milestones.length;
+    const completedMilestones = goal.milestones.filter(
+      (milestone) => milestone.status
+    ).length;
+    return totalMilestones > 0
+      ? Math.round((completedMilestones / totalMilestones) * 100)
+      : 0;
+  };
   // Mock data for charts
+
   const goalProgressData = [
     { name: 'Learn React', value: 75 },
     { name: 'Run 5K', value: 60 },
@@ -13,6 +28,10 @@ const Reports = () => {
     { name: 'Learn Piano', value: 40 },
     { name: 'Save $5000', value: 30 },
   ];
+
+  goals.forEach((goal) => {
+    goalProgressData.push({name:goal.title, value: getProgress(goal)})
+  })
   
   const taskCompletionData = [
     { name: 'Mon', completed: 5, total: 8 },
@@ -24,13 +43,7 @@ const Reports = () => {
     { name: 'Sun', completed: 2, total: 4 },
   ];
   
-  const habitStreakData = [
-    { name: 'Drink water', streak: 7 },
-    { name: 'Meditate', streak: 5 },
-    { name: 'Exercise', streak: 3 },
-    { name: 'Read', streak: 12 },
-    { name: 'Journal', streak: 8 },
-  ];
+
   
   const categoryDistributionData = [
     { name: 'Health', value: 35 },
@@ -81,189 +94,78 @@ const Reports = () => {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="goals">Goals</TabsTrigger>
+          {/* <TabsTrigger value="goals">Goals</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
-          <TabsTrigger value="habits">Habits</TabsTrigger>
+          <TabsTrigger value="habits">Habits</TabsTrigger> */}
         </TabsList>
         
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Goal Progress</CardTitle>
-                <CardDescription>Average completion across all goals</CardDescription>
+            <Card className="w-full overflow-hidden">
+              <CardHeader className="overflow-hidden">
+          <CardTitle className="truncate">Goal Progress</CardTitle>
+          <CardDescription className="truncate">Average completion across all goals</CardDescription>
               </CardHeader>
               <CardContent>
-                <PieChart
-                  data={goalProgressData}
-                  index="name"
-                  categories={["value"]}
-                  valueFormatter={(value) => `${value}%`}
-                  colors={["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"]}
-                  className="aspect-square"
-                />
+          <PieChart
+            data={goalProgressData}
+            index="name"
+            categories={["value"]}
+            valueFormatter={(value) => `${value}%`}
+            colors={["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"]}
+            className="w-full aspect-square"
+          />
               </CardContent>
             </Card>
             
-            <Card>
-              <CardHeader>
-                <CardTitle>Weekly Progress</CardTitle>
-                <CardDescription>Progress trend over time</CardDescription>
+            <Card className="w-full overflow-hidden">
+              <CardHeader className="overflow-hidden">
+          <CardTitle className="truncate">Weekly Progress</CardTitle>
+          <CardDescription className="truncate">Progress trend over time</CardDescription>
               </CardHeader>
               <CardContent>
-                <LineChart
-                  data={weeklyProgressData}
-                  index="name"
-                  categories={["progress"]}
-                  colors={["hsl(var(--chart-1))"]}
-                  valueFormatter={(value) => `${value}%`}
-                  className="aspect-square"
-                />
+          <LineChart
+            data={weeklyProgressData}
+            index="name"
+            categories={["progress"]}
+            colors={["hsl(var(--chart-1))"]}
+            valueFormatter={(value) => `${value}%`}
+            className="w-full aspect-square"
+          />
               </CardContent>
             </Card>
             
-            <Card>
-              <CardHeader>
-                <CardTitle>Category Distribution</CardTitle>
-                <CardDescription>Goals by category</CardDescription>
+            <Card className="w-full overflow-hidden">
+              <CardHeader className="overflow-hidden">
+          <CardTitle className="truncate">Category Distribution</CardTitle>
+          <CardDescription className="truncate">Goals by category</CardDescription>
               </CardHeader>
               <CardContent>
-                <PieChart
-                  data={categoryDistributionData}
-                  index="name"
-                  categories={["value"]}
-                  valueFormatter={(value) => `${value}%`}
-                  colors={["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"]}
-                  className="aspect-square"
-                />
+          <PieChart
+            data={categoryDistributionData}
+            index="name"
+            categories={["value"]}
+            valueFormatter={(value) => `${value}%`}
+            colors={["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"]}
+            className="w-full aspect-square"
+          />
               </CardContent>
             </Card>
           </div>
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Task Completion Rate</CardTitle>
-              <CardDescription>Daily task completion for the past week</CardDescription>
+          <Card className="w-full overflow-hidden">
+            <CardHeader className="overflow-hidden">
+              <CardTitle className="truncate">Task Completion Rate</CardTitle>
+              <CardDescription className="truncate">Daily task completion for the past week</CardDescription>
             </CardHeader>
             <CardContent>
               <BarChart
-                data={taskCompletionData}
-                index="name"
-                categories={["completed", "total"]}
-                colors={["hsl(var(--chart-1))", "hsl(var(--chart-2))"]}
-                valueFormatter={(value) => `${value} tasks`}
-                className="aspect-[2/1]"
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="goals" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Goal Progress</CardTitle>
-              <CardDescription>Detailed view of each goal's progress</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <BarChart
-                data={goalProgressData}
-                index="name"
-                categories={["value"]}
-                colors={["hsl(var(--chart-1))"]}
-                valueFormatter={(value) => `${value}%`}
-                className="aspect-[2/1]"
-              />
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Category Distribution</CardTitle>
-              <CardDescription>Goals by category</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <PieChart
-                data={categoryDistributionData}
-                index="name"
-                categories={["value"]}
-                valueFormatter={(value) => `${value}%`}
-                colors={["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"]}
-                className="aspect-[2/1]"
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="tasks" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Task Completion Rate</CardTitle>
-              <CardDescription>Daily task completion for the past week</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <BarChart
-                data={taskCompletionData}
-                index="name"
-                categories={["completed", "total"]}
-                colors={["hsl(var(--chart-1))", "hsl(var(--chart-2))"]}
-                valueFormatter={(value) => `${value} tasks`}
-                className="aspect-[2/1]"
-              />
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Weekly Task Trend</CardTitle>
-              <CardDescription>Task completion trend over time</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <LineChart
-                data={weeklyProgressData}
-                index="name"
-                categories={["progress"]}
-                colors={["hsl(var(--chart-1))"]}
-                valueFormatter={(value) => `${value}%`}
-                className="aspect-[2/1]"
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="habits" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Habit Streaks</CardTitle>
-              <CardDescription>Current streak for each habit</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <BarChart
-                data={habitStreakData}
-                index="name"
-                categories={["streak"]}
-                colors={["hsl(var(--chart-1))"]}
-                valueFormatter={(value) => `${value} days`}
-                className="aspect-[2/1]"
-              />
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Habit Consistency</CardTitle>
-              <CardDescription>Percentage of days with completed habits</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <PieChart
-                data={[
-                  { name: 'Completed', value: 75 },
-                  { name: 'Missed', value: 25 },
-                ]}
-                index="name"
-                categories={["value"]}
-                valueFormatter={(value) => `${value}%`}
-                colors={["hsl(var(--chart-1))", "hsl(var(--chart-2))"]}
-                className="aspect-[2/1]"
+          data={taskCompletionData}
+          index="name"
+          categories={["completed", "total"]}
+          colors={["hsl(var(--chart-1))", "hsl(var(--chart-2))"]}
+          valueFormatter={(value) => `${value} tasks`}
+          className="w-full aspect-[2/1]"
               />
             </CardContent>
           </Card>
